@@ -1,0 +1,46 @@
+#!/bin/bash
+# Job name
+#PBS -N openmp
+# Output files
+#PBS -o ./openmp/openmp.o
+#PBS -e ./openmp/openmp.e
+# Queue name
+#PBS -q short_cpuQ
+# Set the maximum wall time
+#PBS -l walltime=0:06:00
+# Number of nodes, cpus, mpi processors and amount of memory
+#PBS -l select=1:ncpus=96:mem=1gb
+
+# Modules for C
+module load gcc91
+
+gcc() {
+    gcc-9.1.0 "$@"
+}
+
+# Select the working directory
+cd /home/$(whoami)/ODMM
+
+# Run code
+gcc -o openmp/openmp openmp/openmp.c -fopenmp -Ofast
+
+echo -e "\nTest 1"
+./openmp/openmp 10 -v
+
+echo -e "\nTest 2"
+./openmp/openmp 500 -v
+
+echo -e "\nTest 3"
+./testThreads.sh openmp/openmp
+
+echo -e "\nTest 4"
+gcc -o openmp/openmp openmp/openmp.c -fopenmp -Ofast
+./testThreads.sh openmp/openmp
+
+echo -e "\nTest 5"
+gcc -o openmp/openmp openmp/openmp.c -fopenmp -O3 -march=native -ftree-vectorize -mavx512f -mavx512dq -funroll-loops
+./testThreads.sh openmp/openmp
+
+echo -e "\nTest 6"
+gcc -o openmp/openmp openmp/openmp.c -fopenmp
+./testThreads.sh openmp/openmp

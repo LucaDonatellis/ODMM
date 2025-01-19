@@ -1,0 +1,34 @@
+#!/bin/bash
+# Job name
+#PBS -N mpi2
+# Output files
+#PBS -o ./mpi2/mpi2.o
+#PBS -e ./mpi2/mpi2.e
+# Queue name
+#PBS -q short_cpuQ
+# Set the maximum wall time
+#PBS -l walltime=0:04:00
+# Number of nodes, cpus, mpi2 processors and amount of memory
+#PBS -l select=1:ncpus=16:mpiprocs=16:mem=1gb
+
+# Modules for C
+module load gcc91
+module load mpich-3.2.1--gcc-9.1.0
+gcc() {
+    gcc-9.1.0 "$@"
+}
+
+# Select the working directory
+cd /home/$(whoami)/ODMM
+
+# Run code
+mpicc -o mpi2/mpi2 mpi2/mpi2.c -Ofast
+
+echo -e "\nTest 1"
+mpirun -np 1 ./mpi2/mpi2 10 -v
+
+echo -e "\nTest 2"
+mpirun -np 9 ./mpi2/mpi2 504 -v
+
+echo -e "\nTest 3"
+./testMPI.sh mpi2/mpi2
