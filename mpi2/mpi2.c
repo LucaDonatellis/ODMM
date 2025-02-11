@@ -64,9 +64,8 @@ int main(int argc, char* argv[]) {
     double* A = NULL;
     double* B = NULL;
     double* C = NULL;
-    int block_size;
-    int bCastData[4];
-    int procDim;
+    int block_size=size / sqrt_p;
+    
     if (rank == 0) {
         A = malloc(size * size * sizeof(double));
         B = malloc(size * size * sizeof(double));
@@ -75,25 +74,12 @@ int main(int argc, char* argv[]) {
         //srand(time(NULL));
         generate_random_matrix(A, size);
         generate_random_matrix(B, size);
-
-        procDim = sqrt_p;
-        block_size = size / sqrt_p;
-        bCastData[0] = procDim;
-        bCastData[1] = block_size;
-        bCastData[2] = size;
-        bCastData[3] = size;
     }
 
     // Start execution
     double start_time = MPI_Wtime();
-    
-    MPI_Bcast(&bCastData, 4, MPI_INT, 0, MPI_COMM_WORLD);
-    procDim = bCastData[0];
-    block_size = bCastData[1];
-    size = bCastData[2];
-    size = bCastData[3];
 
-    int dim[2] = {procDim, procDim};
+    int dim[2] = {sqrt_p, sqrt_p};
     int period[2] = {1, 1};
     int reorder = 1;
     MPI_Comm cart_comm;
@@ -118,12 +104,12 @@ int main(int argc, char* argv[]) {
             sendCounts[i] = 1;
         }
         int disp = 0;
-        for (int i = 0; i < procDim; i++) {
-            for (int j = 0; j < procDim; j++) {
-                displacements[i * procDim + j] = disp;
+        for (int i = 0; i < sqrt_p; i++) {
+            for (int j = 0; j < sqrt_p; j++) {
+                displacements[i * sqrt_p + j] = disp;
                 disp += 1;
             }
-            disp += (block_size - 1) * procDim;
+            disp += (block_size - 1) * sqrt_p;
         }
     }
 
@@ -139,7 +125,7 @@ int main(int argc, char* argv[]) {
     MPI_Cart_shift(cart_comm, 0, coords[1], &up, &down);
     MPI_Sendrecv_replace(local_B, block_size * block_size, MPI_DOUBLE, up, 1, down, 1, cart_comm, MPI_STATUS_IGNORE);
 
-    for (int k = 0; k < procDim; k++) {
+    for (int k = 0; k < sqrt_p; k++) {
         gemm(local_A, local_B, local_C, block_size);
 
         MPI_Cart_shift(cart_comm, 1, 1, &left, &right);

@@ -1,5 +1,5 @@
 #!/bin/bash
-nps=(1 2 3 4 9 16)
+nps=(1 2 3 4 9 16 25 36 49 64 81)
 
 for np in "${nps[@]}"; do
     echo "Running with $np processors:"

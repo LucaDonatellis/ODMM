@@ -9,7 +9,7 @@
 # Set the maximum wall time
 #PBS -l walltime=0:04:00
 # Number of nodes, cpus, mpi processors and amount of memory
-#PBS -l select=1:ncpus=16:mpiprocs=16:mem=1gb
+#PBS -l select=1:ncpus=96:mpiprocs=96:mem=1gb
 
 # Modules for C
 module load gcc91

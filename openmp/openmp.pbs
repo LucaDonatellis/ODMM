@@ -34,13 +34,9 @@ echo -e "\nTest 3"
 ./testThreads.sh openmp/openmp
 
 echo -e "\nTest 4"
-gcc -o openmp/openmp openmp/openmp.c -fopenmp -Ofast
-./testThreads.sh openmp/openmp
-
-echo -e "\nTest 5"
 gcc -o openmp/openmp openmp/openmp.c -fopenmp -O3 -march=native -ftree-vectorize -mavx512f -mavx512dq -funroll-loops
 ./testThreads.sh openmp/openmp
 
-echo -e "\nTest 6"
+echo -e "\nTest 5"
 gcc -o openmp/openmp openmp/openmp.c -fopenmp
 ./testThreads.sh openmp/openmp

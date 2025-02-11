@@ -34,13 +34,9 @@ echo -e "\nTest 3"
 ./testThreads.sh openmp2/openmp2
 
 echo -e "\nTest 4"
-gcc -o openmp2/openmp2 openmp2/openmp2.c -fopenmp -Ofast
-./testThreads.sh openmp2/openmp2
-
-echo -e "\nTest 5"
 gcc -o openmp2/openmp2 openmp2/openmp2.c -fopenmp -O3 -march=native -ftree-vectorize -mavx512f -mavx512dq -funroll-loops
 ./testThreads.sh openmp2/openmp2
 
-echo -e "\nTest 6"
+echo -e "\nTest 5"
 gcc -o openmp2/openmp2 openmp2/openmp2.c -fopenmp
 ./testThreads.sh openmp2/openmp2
